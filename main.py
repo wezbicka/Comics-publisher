@@ -13,6 +13,8 @@ def main():
     response = requests.get(f"{url}/info.0.json")
     response.raise_for_status()
     image_url = response.json()["img"]
+    comment = response.json()["alt"]
+    print(comment)
     download_image(image_url, "картинка.png")
 
 
