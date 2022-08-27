@@ -1,4 +1,7 @@
+import os
+
 import requests
+from dotenv import load_dotenv
 
 
 def download_image(image_url, download_path):
@@ -9,6 +12,8 @@ def download_image(image_url, download_path):
 
 
 def main():
+    load_dotenv()
+    client_id = os.environ['CLIENT_ID']
     url = "https://xkcd.com/353"
     response = requests.get(f"{url}/info.0.json")
     response.raise_for_status()
