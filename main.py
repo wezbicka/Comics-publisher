@@ -56,6 +56,22 @@ def save_photo_to_album(token, group_id, photo, server, hash, version):
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
+    save_comic = response.json()['response'][0]
+    return save_comic['id'], save_comic['owner_id']
+
+
+def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
+    url = "https://api.vk.com/method/wall.post"
+    params = {
+        'access_token': token,
+        'owner_id': f'-{group_id}',
+        'from_group': 0,
+        'message': text,
+        'attachments': f'photo{owner_id}_{media_id}',
+        'v': version,
+    }
+    response = requests.post(url, params=params)
+    response.raise_for_status()
     return response.json()
 
 
@@ -72,17 +88,18 @@ def main():
     client_id = os.environ['CLIENT_ID']
     vk_token = os.environ['ACCESS_TOKEN']
     group_id = 215590113
-    # url = "https://xkcd.com/353"
-    # response = requests.get(f"{url}/info.0.json")
-    # response.raise_for_status()
-    # image_url = response.json()["img"]
-    # comment = response.json()["alt"]
+    url = "https://xkcd.com/353"
+    response = requests.get(f"{url}/info.0.json")
+    response.raise_for_status()
+    image_url = response.json()["img"]
+    comment = response.json()["alt"]
     # print(comment)
     # download_image(image_url, "картинка.png")
     print(get_groups(vk_token, version))
     upload_url = get_upload_url(vk_token, group_id, version)
     photo, server, hash = upload_photo_to_server(upload_url, "картинка.png")
-    print(save_photo_to_album(vk_token, group_id, photo, server, hash, version))
+    media_id, owner_id = save_photo_to_album(vk_token, group_id, photo, server, hash, version)
+    print(post_photo_to_wall(vk_token, group_id, media_id, owner_id, comment, version))
 
 
 if __name__ == "__main__":
