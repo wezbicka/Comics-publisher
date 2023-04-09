@@ -44,6 +44,21 @@ def upload_photo_to_server(upload_url, file_name):
     )
 
 
+def save_photo_to_album(token, group_id, photo, server, hash, version):
+    url = "https://api.vk.com/method/photos.saveWallPhoto"
+    params = {
+        'access_token': token,
+        "group_id": group_id,
+        "photo": photo,
+        "server": server,
+        "hash": hash,
+        "v": version,
+    }
+    response = requests.post(url, params=params)
+    response.raise_for_status()
+    return response.json()
+
+
 def download_image(image_url, download_path):
     response = requests.get(image_url)
     response.raise_for_status()
@@ -66,7 +81,8 @@ def main():
     # download_image(image_url, "картинка.png")
     print(get_groups(vk_token, version))
     upload_url = get_upload_url(vk_token, group_id, version)
-    print(upload_photo_to_server(upload_url, "картинка.png"))
+    photo, server, hash = upload_photo_to_server(upload_url, "картинка.png")
+    print(save_photo_to_album(vk_token, group_id, photo, server, hash, version))
 
 
 if __name__ == "__main__":
