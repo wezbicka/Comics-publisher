@@ -4,29 +4,44 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_groups(token):
+def get_groups(token, version):
     url = "https://api.vk.com/method/groups.get"
     params = {
         'access_token': token,
         'filter': "admin",
-        'v': 5.131,
+        'v': version,
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
-    print(response.json())
+    return response.json()['response']
 
 
-def get_photo_url(token, group_id):
+def get_upload_url(token, group_id, version):
     """Returns the server address for uploading a photo to a user's or community's wall."""
     url = "https://api.vk.com/method/photos.getWallUploadServer"
     params = {
         'access_token': token,
         "group_id": group_id,
-        'v': 5.131,
+        'v': version,
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
-    print(response.content)
+    return response.json()['response']['upload_url']
+
+
+def upload_photo_to_server(upload_url, file_name):
+    with open(file_name, 'rb') as file:
+        files = {
+            'photo': file,
+        }
+        response = requests.post(upload_url, files=files)
+    response.raise_for_status()
+    server_answer = response.json()
+    return (
+        server_answer['photo'],
+        server_answer['server'],
+        server_answer['hash'],
+    )
 
 
 def download_image(image_url, download_path):
@@ -38,6 +53,7 @@ def download_image(image_url, download_path):
 
 def main():
     load_dotenv()
+    version = 5.131
     client_id = os.environ['CLIENT_ID']
     vk_token = os.environ['ACCESS_TOKEN']
     group_id = 215590113
@@ -48,8 +64,9 @@ def main():
     # comment = response.json()["alt"]
     # print(comment)
     # download_image(image_url, "картинка.png")
-    get_photo_url(vk_token, group_id)
-    get_groups(vk_token)
+    print(get_groups(vk_token, version))
+    upload_url = get_upload_url(vk_token, group_id, version)
+    print(upload_photo_to_server(upload_url, "картинка.png"))
 
 
 if __name__ == "__main__":
