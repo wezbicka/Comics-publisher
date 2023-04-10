@@ -113,7 +113,9 @@ def main():
     upload_url = get_upload_url(vk_token, group_id, version)
     photo, server, hash = upload_photo_to_server(upload_url, file_path)
     media_id, owner_id = save_photo_to_album(vk_token, group_id, photo, server, hash, version)
-    print(post_photo_to_wall(vk_token, group_id, media_id, owner_id, comment, version))
+    post_photo_to_wall(vk_token, group_id, media_id, owner_id, comment, version)
+    if os.path.isfile(file_path):
+        os.remove(file_path)
 
 
 if __name__ == "__main__":
