@@ -1,4 +1,5 @@
 import os
+import random
 
 import requests
 from dotenv import load_dotenv
@@ -64,8 +65,8 @@ def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
     url = "https://api.vk.com/method/wall.post"
     params = {
         'access_token': token,
-        'owner_id': f'-{group_id}',
-        'from_group': 0,
+        'owner_id': f'-{group_id}', # почему не работает публикация от своего имени
+        'from_group': 1,
         'message': text,
         'attachments': f'photo{owner_id}_{media_id}',
         'v': version,
@@ -73,6 +74,22 @@ def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
     response = requests.post(url, params=params)
     response.raise_for_status()
     return response.json()
+
+
+def get_index_last_comic():
+    url = 'https://xkcd.com/info.0.json'
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()['num']
+
+
+def get_comic(comic_number):
+    url = f"https://xkcd.com/{comic_number}/info.0.json"
+    response = requests.get(url)
+    response.raise_for_status()
+    image_url = response.json()["img"]
+    comment = response.json()["alt"]
+    return image_url, comment
 
 
 def download_image(image_url, download_path):
@@ -84,20 +101,17 @@ def download_image(image_url, download_path):
 
 def main():
     load_dotenv()
+    file_path = "file.png"
     version = 5.131
     client_id = os.environ['CLIENT_ID']
     vk_token = os.environ['ACCESS_TOKEN']
     group_id = 215590113
-    url = "https://xkcd.com/353"
-    response = requests.get(f"{url}/info.0.json")
-    response.raise_for_status()
-    image_url = response.json()["img"]
-    comment = response.json()["alt"]
-    # print(comment)
-    # download_image(image_url, "картинка.png")
-    print(get_groups(vk_token, version))
+    comics_amount = get_index_last_comic()
+    comic_number = random.randint(0, comics_amount)
+    image_url, comment = get_comic(comic_number)
+    download_image(image_url, file_path)
     upload_url = get_upload_url(vk_token, group_id, version)
-    photo, server, hash = upload_photo_to_server(upload_url, "картинка.png")
+    photo, server, hash = upload_photo_to_server(upload_url, file_path)
     media_id, owner_id = save_photo_to_album(vk_token, group_id, photo, server, hash, version)
     print(post_photo_to_wall(vk_token, group_id, media_id, owner_id, comment, version))
 
