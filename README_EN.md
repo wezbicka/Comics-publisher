@@ -27,9 +27,9 @@ The script publishes random comics to VK by downloading them from this [site](ht
 ```
     pip install -r requirements.txt
 ```
-    
+
 5. Create an application in VK ([link](https://vk.com/apps?act=manage)) and get its ID. Then get [access_token](https://vk.com/dev/implicit_flow_user) with the following permissions: `photos, groups, wall, offline`. Also create your community in VK and [find out its ID](https://regvk.com/id/).
-    
+
 6. Create a file called .env and add everything you got above. Here is an example:
 
 ```

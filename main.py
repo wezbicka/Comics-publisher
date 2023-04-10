@@ -18,7 +18,8 @@ def get_groups(token, version):
 
 
 def get_upload_url(token, group_id, version):
-    """Returns the server address for uploading a photo to a user's or community's wall."""
+    """Returns the server address for uploading
+    a photo to a user's or community's wall."""
     url = "https://api.vk.com/method/photos.getWallUploadServer"
     params = {
         'access_token': token,
@@ -65,7 +66,7 @@ def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
     url = "https://api.vk.com/method/wall.post"
     params = {
         'access_token': token,
-        'owner_id': f'-{group_id}', # почему не работает публикация от своего имени
+        'owner_id': f'-{group_id}',
         'from_group': 1,
         'message': text,
         'attachments': f'photo{owner_id}_{media_id}',
@@ -103,7 +104,6 @@ def main():
     load_dotenv()
     file_path = "file.png"
     version = 5.131
-    client_id = os.environ['CLIENT_ID']
     vk_token = os.environ['ACCESS_TOKEN']
     group_id = 215590113
     comics_amount = get_index_last_comic()
@@ -112,8 +112,22 @@ def main():
     download_image(image_url, file_path)
     upload_url = get_upload_url(vk_token, group_id, version)
     photo, server, hash = upload_photo_to_server(upload_url, file_path)
-    media_id, owner_id = save_photo_to_album(vk_token, group_id, photo, server, hash, version)
-    post_photo_to_wall(vk_token, group_id, media_id, owner_id, comment, version)
+    media_id, owner_id = save_photo_to_album(
+        vk_token,
+        group_id,
+        photo,
+        server,
+        hash,
+        version,
+    )
+    post_photo_to_wall(
+        vk_token,
+        group_id,
+        media_id,
+        owner_id,
+        comment,
+        version,
+    )
     if os.path.isfile(file_path):
         os.remove(file_path)
 
