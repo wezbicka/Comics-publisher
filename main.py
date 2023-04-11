@@ -1,8 +1,17 @@
 import os
 import random
+import logging
 
 import requests
 from dotenv import load_dotenv
+
+
+logger = logging.getLogger()
+logging.basicConfig(filename="py_log.log",filemode="w")
+
+
+class VkApiError(Exception):
+    pass
 
 
 def get_upload_url(token, group_id, version):
@@ -16,6 +25,7 @@ def get_upload_url(token, group_id, version):
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
+    exist_errors(response.json())
     return response.json()['response']['upload_url']
 
 
@@ -26,6 +36,7 @@ def upload_photo_to_server(upload_url, file_name):
         }
         response = requests.post(upload_url, files=files)
     response.raise_for_status()
+    exist_errors(response.json())
     return response.json()
 
 
@@ -41,6 +52,7 @@ def save_photo_to_album(token, group_id, args, version):
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
+    exist_errors(response.json())
     save_comic = response.json()['response'][0]
     return save_comic['id'], save_comic['owner_id']
 
@@ -57,6 +69,7 @@ def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
+    exist_errors(response.json())
     return response.json()
 
 
@@ -75,6 +88,12 @@ def get_comic(comic_number):
     comment = response.json()["alt"]
     return image_url, comment
 
+
+def exist_errors(json_response):
+    if 'error' in json_response.keys():
+        logging.error(json_response['error'])
+        raise VkApiError(json_response['error']['error_msg'])
+    
 
 def download_image(image_url, download_path):
     response = requests.get(image_url)
