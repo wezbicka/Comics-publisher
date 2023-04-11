@@ -65,7 +65,7 @@ def post_photo_to_wall(token, group_id, media_id, owner_id, text, version):
     return response.json()
 
 
-def get_index_last_comic():
+def get_last_comic_index():
     url = 'https://xkcd.com/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
@@ -94,7 +94,7 @@ def main():
     version = 5.131
     vk_token = os.environ['VK_ACCESS_TOKEN']
     group_id = os.getenv('VK_GROUP_ID')
-    comics_amount = get_index_last_comic()
+    comics_amount = get_last_comic_index()
     comic_number = random.randint(0, comics_amount)
     image_url, comment = get_comic(comic_number)
     download_image(image_url, file_path)
