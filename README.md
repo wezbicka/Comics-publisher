@@ -38,9 +38,9 @@
 6. Cоздайте файл с названием .env и добавьте всё, что Вы получили выше. Вот пример:
 
 ```
-    CLIENT_ID=0000000
-    GROUP_ID=0000001
-    VK_TOKEN=vk1.a.vk_access_token
+    VK_CLIENT_ID=0000000
+    VK_GROUP_ID=0000001
+    VK_ACCESS_TOKEN=vk1.a.vk_access_token
 ```
 
 7. Запустите скрипт

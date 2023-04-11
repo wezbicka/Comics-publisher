@@ -33,9 +33,9 @@ The script publishes random comics to VK by downloading them from this [site](ht
 6. Create a file called .env and add everything you got above. Here is an example:
 
 ```
-    CLIENT_ID=0000000
-    GROUP_ID=0000001
-    VK_TOKEN=vk1.a.vk_access_token
+    VK_CLIENT_ID=0000000
+    VK_GROUP_ID=0000001
+    VK_ACCESS_TOKEN=vk1.a.vk_access_token
 ```
 
 7. Run the script

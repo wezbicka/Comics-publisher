@@ -104,8 +104,8 @@ def main():
     load_dotenv()
     file_path = "file.png"
     version = 5.131
-    vk_token = os.environ['ACCESS_TOKEN']
-    group_id = os.getenv('GROUP_ID')
+    vk_token = os.environ['VK_ACCESS_TOKEN']
+    group_id = os.getenv('VK_GROUP_ID')
     comics_amount = get_index_last_comic()
     comic_number = random.randint(0, comics_amount)
     image_url, comment = get_comic(comic_number)
