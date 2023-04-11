@@ -38,6 +38,12 @@ The script publishes random comics to VK by downloading them from this [site](ht
     VK_TOKEN=vk1.a.vk_access_token
 ```
 
+7. Run the script
+
+```
+    python main.py
+```
+
 ### Project Goals
 
 The code is written for educational purposes on online-course for web-developers [dvmn.org](https://dvmn.org/).
