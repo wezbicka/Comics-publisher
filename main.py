@@ -26,22 +26,17 @@ def upload_photo_to_server(upload_url, file_name):
         }
         response = requests.post(upload_url, files=files)
     response.raise_for_status()
-    server_answer = response.json()
-    return (
-        server_answer['photo'],
-        server_answer['server'],
-        server_answer['hash'],
-    )
+    return response.json()
 
 
-def save_photo_to_album(token, group_id, photo, server, hash, version):
+def save_photo_to_album(token, group_id, args, version):
     url = "https://api.vk.com/method/photos.saveWallPhoto"
     params = {
         'access_token': token,
         "group_id": group_id,
-        "photo": photo,
-        "server": server,
-        "hash": hash,
+        "photo": args['photo'],
+        "server": args['server'],
+        "hash": args['hash'],
         "v": version,
     }
     response = requests.post(url, params=params)
@@ -99,13 +94,11 @@ def main():
     image_url, comment = get_comic(comic_number)
     download_image(image_url, file_path)
     upload_url = get_upload_url(vk_token, group_id, version)
-    photo, server, hash = upload_photo_to_server(upload_url, file_path)
+    server_response = upload_photo_to_server(upload_url, file_path)
     media_id, owner_id = save_photo_to_album(
         vk_token,
         group_id,
-        photo,
-        server,
-        hash,
+        server_response,
         version,
     )
     post_photo_to_wall(
