@@ -5,18 +5,6 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_groups(token, version):
-    url = "https://api.vk.com/method/groups.get"
-    params = {
-        'access_token': token,
-        'filter': "admin",
-        'v': version,
-    }
-    response = requests.post(url, params=params)
-    response.raise_for_status()
-    return response.json()['response']
-
-
 def get_upload_url(token, group_id, version):
     """Returns the server address for uploading
     a photo to a user's or community's wall."""
