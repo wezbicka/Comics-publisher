@@ -37,17 +37,22 @@ def upload_photo_to_server(upload_url, file_name):
         response = requests.post(upload_url, files=files)
     response.raise_for_status()
     exist_errors(response.json())
-    return response.json()
+    server_answer = response.json()
+    return (
+        server_answer['photo'],
+        server_answer['server'],
+        server_answer['hash'],
+    )
 
 
-def save_photo_to_album(token, group_id, args, version):
+def save_photo_to_album(token, group_id, photo, server, photo_hash, version):
     url = "https://api.vk.com/method/photos.saveWallPhoto"
     params = {
         'access_token': token,
         "group_id": group_id,
-        "photo": args['photo'],
-        "server": args['server'],
-        "hash": args['hash'],
+        "photo": photo,
+        "server": server,
+        "hash": photo_hash,
         "v": version,
     }
     response = requests.post(url, params=params)
@@ -107,18 +112,20 @@ def main():
     file_path = "file.png"
     version = 5.131
     vk_token = os.environ['VK_ACCESS_TOKEN']
-    group_id = os.getenv('VK_GROUP_ID')
+    group_id = os.environ['VK_GROUP_ID']
     comics_amount = get_last_comic_index()
     comic_number = random.randint(0, comics_amount)
     image_url, comment = get_comic(comic_number)
     try:
         download_image(image_url, file_path)
         upload_url = get_upload_url(vk_token, group_id, version)
-        server_response = upload_photo_to_server(upload_url, file_path)
+        photo, server, photo_hash = upload_photo_to_server(upload_url, file_path)
         media_id, owner_id = save_photo_to_album(
             vk_token,
             group_id,
-            server_response,
+            photo,
+            server,
+            photo_hash,
             version,
         )
         post_photo_to_wall(
